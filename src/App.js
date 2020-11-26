@@ -21,21 +21,25 @@ const App = () => {
                 productId: PRODUCT_ID
                 }]
             });
-            console.log('open'); // Testing for open devices
+            console.log('openning...'); // Testing for open devices
             // await device.open();
             // console.log('opened:', device); // Testing for open devices
             // if (device.configuration === null)
             //     await device.selectConfiguration(1);
             // await device.claimInterface(1);
             device.open()
-            .then(() => device.selectConfiguration(1)) // Select configuration #1 for the device.
-            .then(() => device.claimInterface(2)) // Request exclusive control over interface #2.
+            .then( () => {
+              console.log("into open device");
+              device.selectConfiguration(1);  // Select configuration #1 for the device.
+            }) 
+            .then(() => device.claimInterface(1)) // Request exclusive control over interface #2.
             .then(() => device.controlTransferOut({
-                requestType: 'class',
+                requestType: 'vendor',
                 recipient: 'interface',
                 request: 0x22,
                 value: 0x01,
-                index: 0x02})) // Ready to receive data
+                index: 0x01 // Ready to receive data at interface 1
+              })) 
             .then(() => device.transferIn(5, 64)) // Waiting for 64 bytes of data from endpoint #5.
             .then(result => {
               const decoder = new TextDecoder();
